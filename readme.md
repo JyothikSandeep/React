@@ -10,8 +10,8 @@ Run the following commands in your React project directory:
 
 
 ```
-npm install -D tailwindcss postcss autoprefixer
-npx tailwindcss init
+npm install -D tailwindcss@3 postcss autoprefixer
+ npx tailwindcss init -p
 ```
 
 2. Configure Tailwind
