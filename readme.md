@@ -407,3 +407,555 @@ Real DOM update
   
   Virtual DOM is a lightweight JavaScript representation of the real DOM used by React to efficiently update the UI by comparing previous and new virtual DOM trees and applying only the minimal changes to the real DOM.
 
+5. Reconciliation in React
+
+In React, Reconciliation is the process React uses to update the UI efficiently when state or props change.
+
+Definition (Interview Ready)
+
+Reconciliation is the process where React compares the previous Virtual DOM with the new Virtual DOM and updates only the necessary parts of the real DOM.
+
+Example
+
+Initial render:
+```
+<ul>
+  <li>Apple</li>
+  <li>Mango</li>
+</ul>
+```
+Virtual DOM Tree:
+
+ul
+ ├── li (Apple)
+ └── li (Mango)
+
+Now update:
+
+<ul>
+  <li>Apple</li>
+  <li>Orange</li>
+</ul>
+
+New Virtual DOM:
+
+ul
+ ├── li (Apple)
+ └── li (Orange)
+
+React compares both trees and finds:
+
+Mango → Orange
+
+So React updates only that node.
+
+This entire process is called Reconciliation.
+
+6. Diffing Algorithm
+
+The Diffing Algorithm is the algorithm React uses during reconciliation to compare trees.
+
+Without optimization, comparing two trees would take:
+```
+O(n³)
+```
+Which is too slow.
+
+React optimizes it to:
+```
+O(n)
+```
+by using two assumptions.
+
+Rule 1: Different Elements → Rebuild Tree
+
+Example:
+
+Old:
+```
+<div>
+  <h1>Hello</h1>
+</div>
+```
+New:
+```
+<span>
+  <h1>Hello</h1>
+</span>
+```
+React sees:
+
+div → span
+
+So it destroys the old tree and rebuilds.
+
+Rule 2: Same Elements → Update Only Changed Parts
+
+Old:
+```
+<h1>Hello</h1>
+```
+New:
+```
+<h1>Hello Sandeep</h1>
+```
+React updates only the text.
+
+Rule 3: Keys Help React Identify Items
+
+Example:
+```
+{items.map(item => (
+  <li key={item.id}>{item.name}</li>
+))}
+```
+key helps React know:
+
+Which element changed
+Which element moved
+Which element was deleted
+
+Without keys, React might re-render everything.
+
+7. React Fiber
+
+React Fiber is the new rendering engine of React introduced in React 16.
+
+It improves:
+
+Performance
+
+Responsiveness
+
+Rendering control
+
+Before Fiber (Old React)
+
+Rendering was:
+
+Synchronous
+
+Meaning:
+
+Start rendering → must finish before doing anything else
+
+If a large UI update happened:
+
+❌ Browser could freeze.
+
+After Fiber
+
+Rendering became:
+```
+Asynchronous
+Interruptible
+Priority-based
+```
+React can now:
+```
+Pause rendering
+Resume later
+Prioritize important updates
+```
+Example priorities:
+```
+High priority
+User typing
+Button click
+```
+Low priority
+Background data rendering
+
+This makes apps much smoother.
+
+4. Full React Rendering Flow
+```
+State Change
+     ↓
+New Virtual DOM Created
+     ↓
+Reconciliation
+     ↓
+Diffing Algorithm
+     ↓
+Find Minimal Changes
+     ↓
+React Fiber schedules updates
+     ↓
+Real DOM Updated
+```
+6. One-Line Summary for Interviews
+
+Virtual DOM
+
+A lightweight copy of the real DOM used by React for efficient UI updates.
+
+Reconciliation
+
+The process of comparing old and new Virtual DOM trees.
+
+Diffing
+
+The algorithm used to detect differences between DOM trees.
+
+React Fiber
+
+The new React rendering engine that enables asynchronous and prioritized rendering.
+
+
+9. What are Props?
+
+Props are inputs passed to components.
+
+Example:
+```
+function User(props) {
+  return <h1>{props.name}</h1>
+}
+
+<User name="Sandeep" />
+```
+Props are read-only.
+
+10. What is State?
+
+State is data managed inside a component.
+
+Example:
+ ```
+const [count, setCount] = useState(0)
+```
+When state changes → component re-renders.
+
+
+11. Life cycle components in react:
+
+    In React, Lifecycle methods describe the different stages a component goes through from creation to removal.
+
+Think of it like a human life cycle:
+
+Birth → Growth → Death
+
+Similarly in React:
+
+Mount → Update → Unmount
+
+These stages are called the Component Lifecycle.
+
+1. Three Phases of React Lifecycle
+Mounting
+Updating
+Unmounting
+
+Let's understand each clearly.
+
+2. Mounting Phase (Component Created)
+
+Mounting means the component is created and inserted into the DOM.
+
+Lifecycle methods in this phase:
+```
+constructor()
+render()
+componentDidMount()
+```
+Flow
+```
+constructor()
+   ↓
+render()
+   ↓
+componentDidMount()
+```
+Example
+```
+class App extends React.Component {
+
+  constructor(props) {
+    super(props)
+    console.log("Constructor called")
+  }
+
+  componentDidMount() {
+    console.log("Component Mounted")
+  }
+
+  render() {
+    console.log("Render called")
+    return <h1>Hello</h1>
+  }
+}
+```
+Output order:
+```
+Constructor
+Render
+ComponentDidMount
+When do we use componentDidMount?
+```
+Common uses:
+```
+API calls
+Fetching data
+Starting timers
+DOM manipulation
+```
+Example:
+```
+componentDidMount() {
+  fetch("/api/users")
+}
+```
+3. Updating Phase
+
+Updating happens when:
+```
+state changes
+props change
+forceUpdate() called
+```
+
+Lifecycle methods:
+```
+shouldComponentUpdate()
+render()
+componentDidUpdate()
+```
+Flow:
+```
+state change
+   ↓
+shouldComponentUpdate()
+   ↓
+render()
+   ↓
+componentDidUpdate()
+```
+Example
+
+```
+componentDidUpdate() {
+  console.log("Component Updated")
+}
+```
+
+Used for:
+```
+API calls after update
+Reacting to state changes
+DOM updates
+```
+4. Unmounting Phase
+
+Unmounting happens when a component is removed from the DOM.
+
+Lifecycle method:
+
+componentWillUnmount()
+
+Example:
+```
+componentWillUnmount() {
+  console.log("Component removed")
+}
+```
+
+Used for cleanup:
+
+clearInterval
+remove event listeners
+cancel API requests
+
+Example:
+```
+componentWillUnmount() {
+  clearInterval(this.timer)
+}
+```
+5. Complete Lifecycle Flow
+Mounting
+```
+   constructor()
+   render()
+   componentDidMount()
+```
+Updating
+```
+   shouldComponentUpdate()
+   render()
+   componentDidUpdate()
+```
+Unmounting
+```
+   componentWillUnmount()
+   ```
+6. Important Interview Point
+
+Lifecycle methods exist only in class components.
+
+Modern React uses Hooks instead.
+
+Example:
+```
+Class Lifecycle	Hook Equivalent
+componentDidMount	useEffect
+componentDidUpdate	useEffect
+componentWillUnmount	cleanup function
+```
+
+Example:
+```
+useEffect(() => {
+  console.log("Mounted")
+
+  return () => {
+    console.log("Unmounted")
+  }
+
+
+}, [])
+
+```
+7. Very Short Interview Definition
+
+React lifecycle methods are special methods in class components that allow developers to run code at different stages of a component's life such as mounting, updating, and unmounting.
+
+
+1. Functional Component (What You Normally Write)
+
+Example using useState + useEffect.
+```
+import { useState, useEffect } from "react";
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    console.log("Component mounted or updated");
+
+    return () => {
+      console.log("Component unmounted");
+    };
+  }, []);
+
+  return (
+    <div>
+      <h1>{count}</h1>
+      <button onClick={() => setCount(count + 1)}>Increase</button>
+    </div>
+  );
+}
+```
+2. Same Component Using Class Components
+```
+import React from "react";
+
+class Counter extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      count: 0
+    };
+  }
+
+  componentDidMount() {
+    console.log("Component mounted");
+  }
+
+  componentWillUnmount() {
+    console.log("Component unmounted");
+  }
+
+  render() {
+    return (
+      <div>
+        <h1>{this.state.count}</h1>
+        <button
+          onClick={() =>
+            this.setState({ count: this.state.count + 1 })
+          }
+        >
+          Increase
+        </button>
+      </div>
+    );
+  }
+}
+
+
+```
+3. useState vs Class State
+Hooks version
+```
+const [count, setCount] = useState(0);
+Class version
+this.state = {
+  count: 0
+};
+```
+Updating state:
+
+Hooks
+```
+setCount(count + 1);
+```
+Class
+```
+this.setState({ count: this.state.count + 1 });
+```
+4. useEffect vs Lifecycle Methods
+
+Your hook:
+```
+useEffect(() => {
+  console.log("Mounted");
+}, []);
+
+Class equivalent:
+
+componentDidMount() {
+  console.log("Mounted");
+}
+```
+5. useEffect for Updates
+
+Hook:
+```
+useEffect(() => {
+  console.log("Updated");
+});
+```
+Class:
+```
+componentDidUpdate() {
+  console.log("Updated");
+}
+```
+6. useEffect Cleanup vs Unmount
+
+Hook cleanup:
+```
+useEffect(() => {
+  return () => {
+    console.log("Unmounted");
+  };
+}, []);
+```
+Class equivalent:
+```
+componentWillUnmount() {
+  console.log("Unmounted");
+}
+
+```
+7. Hooks vs Class Mapping (Important)
+
+```
+Hooks	Class Component
+useState	this.state
+setState	this.setState
+useEffect mount	componentDidMount
+useEffect update	componentDidUpdate
+useEffect cleanup	componentWillUnmount
+```
